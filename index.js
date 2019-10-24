@@ -67,6 +67,7 @@ let templates = [
 let meeting = null;
 /*
 let meeting = {
+    title: "good meeting",
     startTime: moment().minute(0).second(0).add(10, "minutes").toISOString(),
     advanced: false,
     template: templates[0]
@@ -89,4 +90,4 @@ io.on('connection', (socket) => {
     });
 });
 
-io.listen(3000);
+io.listen(8000);
