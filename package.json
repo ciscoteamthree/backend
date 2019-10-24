@@ -6,6 +6,9 @@
   "repository": "git@github.com:ciscoteamthree/backend.git",
   "author": "TeamTheee",
   "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "moment": "^2.24.0",
     "socket.io": "^2.3.0"
