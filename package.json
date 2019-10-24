@@ -1,0 +1,9 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "backend, node, cisco, hackaton",
+  "main": "index.js",
+  "repository": "git@github.com:ciscoteamthree/backend.git",
+  "author": "TeamTheee",
+  "license": "MIT"
+}
