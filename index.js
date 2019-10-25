@@ -3,6 +3,8 @@ const io = new Server();
 const { templates } = require('./templates');
 var rp = require('request-promise');
 io.set('origins', '*:*');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const clientId = process.env.CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
@@ -18,7 +20,7 @@ if (process.env.TOKEN) {
   };
 }
 
-const redirectUri = encodeURIComponent('http://localhost:3000/login');
+const redirectUri = encodeURIComponent(process.env.REDIRECT_URL);
 const loginUrl = `https://api.ciscospark.com/v1/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=spark%3Akms%20spark%3Aall%20spark-admin%3Adevices_read%20spark-compliance%3Arooms_read&state=set_state_here`;
 
 io.on('connection', socket => {
@@ -45,10 +47,10 @@ io.on('connection', socket => {
       method: 'POST',
       json: {
         grant_type: 'authorization_code',
-        client_id: clientId,
-        client_secret: clientSecret,
+        client_id: process.env.CLIENT_ID,
+        client_secret: process.env.CLIENT_SECRET,
         code: code,
-        redirect_uri: 'http://localhost:3000/login'
+        redirect_uri: process.env.REDIRECT_URL
       }
     })
       .then(res => {
