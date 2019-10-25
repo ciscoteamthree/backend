@@ -1,6 +1,7 @@
 const Server = require('socket.io');
 const io = new Server();
 const { templates } = require('./templates');
+const { meeting } = require('./meeting');
 var rp = require('request-promise');
 io.set('origins', '*:*');
 const dotenv = require('dotenv');
@@ -9,7 +10,7 @@ dotenv.config();
 const clientId = process.env.CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
 
-let meeting = null;
+//let meeting = null;
 let auth = null;
 /*
 { access_token, expires_in, refresh_token, refresh_token_expires_in }
