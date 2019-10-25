@@ -77,16 +77,38 @@ const getNetatmoAccessToken = () => {
 };
 
 let lastSensorReading = null;
+let lastSensorWarning = 0;
+const sensorThreshold = 400; // 400ppm is normal, should be higher
+const sensorTimeout = 60; // 1 min between alerts
+
+const sensorWarn = () => {
+  const now = Date.now();
+  const diff = now - lastSensorWarning;
+  if (diff > sensorTimeout * 1000) {
+    console.log('WARN', lastSensorReading.co2);
+    // sendXAPIAlert(
+    //   `CO2 readings are dangerously high at ${lastSensorReading.co2} parts per million. You should open a window or take a break`
+    // );
+    lastSensorWarning = now;
+  }
+};
+
 const sensorDataToSocketIO = () => {
   getSensorData().then(sensorData => {
+    if (!sensorData) {
+      return;
+    }
     console.log('sensor data', sensorData);
     lastSensorReading = sensorData;
+    if (lastSensorReading.co2 > sensorThreshold) {
+      sensorWarn();
+    }
     io.emit('sensorData', sensorData);
   });
 };
 
 sensorDataToSocketIO();
-const sensorInterval = setInterval(sensorDataToSocketIO, 30000);
+const sensorInterval = setInterval(sensorDataToSocketIO, 10 * 1000);
 
 io.on('connection', socket => {
   console.log('connect');
