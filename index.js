@@ -3,14 +3,12 @@ const io = new Server();
 const { templates } = require('./templates');
 const { meeting: initialMeeting } = require('./meeting');
 
+var querystring = require('querystring');
 var rp = require('request-promise');
 io.set('origins', '*:*');
 
 const dotenv = require('dotenv');
 dotenv.config();
-
-const clientId = process.env.CLIENT_ID;
-const clientSecret = process.env.CLIENT_SECRET;
 
 let auth = null;
 /*
@@ -26,38 +24,75 @@ if (process.env.TOKEN) {
 let meeting = initialMeeting;
 
 const redirectUri = encodeURIComponent(process.env.REDIRECT_URL);
-const loginUrl = `https://api.ciscospark.com/v1/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=spark%3Akms%20spark%3Aall%20spark-admin%3Adevices_read%20spark-compliance%3Arooms_read&state=set_state_here`;
+const loginUrl = `https://api.ciscospark.com/v1/authorize?client_id=${process.env.CLIENT_ID}&response_type=code&redirect_uri=${redirectUri}&scope=spark%3Akms%20spark%3Aall%20spark-admin%3Adevices_read%20spark-compliance%3Arooms_read&state=set_state_here`;
 
-const netatmoAccessToken = process.env.NETATMO_ACCESS_TOKEN;
 const netatmoDeviceId = encodeURIComponent(process.env.NETATMO_DEVICE_ID);
+let netatmoAccessToken = process.env.NETATMO_ACCESS_TOKEN;
 
 const getSensorData = () => {
-  const sensorData = {
-    co2: 200,
-    temp: 23.2
-  };
-  return new Promise(resolve => {
-    setTimeout(() => resolve(sensorData), 200);
-  });
-  // return rp(
-  //   `https://api.netatmo.com/api/getstationsdata?access_token=${netatmoAccessToken}&device_id=${netatmoDeviceId}`
-  // )
-  //   .then(res => {
-  //     console.log(res);
-  //   })
-  //   .catch(err => {
-  //     console.error(err);
-  //   });
+  return rp(
+    `https://api.netatmo.com/api/getstationsdata?access_token=${netatmoAccessToken}&device_id=${netatmoDeviceId}`
+  )
+    .then(res => {
+      const device = JSON.parse(res).body.devices[0];
+      return {
+        co2: device.dashboard_data.CO2,
+        temperature: device.dashboard_data.Temperature,
+        noise: device.dashboard_data.Noise
+      };
+    })
+    .catch(err => {
+      console.error(err);
+      console.log('Fetching environment data failed');
+      getNetatmoAccessToken();
+    });
 };
 
-const sensorInterval = setInterval(() => {
+const getNetatmoAccessToken = () => {
+  console.log('fetching new access token');
+  const form = {
+    grant_type: 'refresh_token',
+    client_id: process.env.NETATMO_CLIENT_ID,
+    client_secret: process.env.NETATMO_CLIENT_SECRET,
+    refresh_token: process.env.NETATMO_REFRESH_TOKEN
+  };
+  var formData = querystring.stringify(form);
+  var contentLength = formData.length;
+
+  return rp(`https://api.netatmo.com/oauth2/token`, {
+    method: 'POST',
+    headers: {
+      'Content-Length': contentLength,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: formData
+  })
+    .then(res => {
+      netatmoAccessToken = JSON.parse(res).access_token;
+      console.log('NEW NETATMO ACCESS TOKEN', netatmoAccessToken);
+    })
+    .catch(err => {
+      console.error(err);
+    });
+};
+
+let lastSensorReading = null;
+const sensorDataToSocketIO = () => {
   getSensorData().then(sensorData => {
+    console.log('sensor data', sensorData);
+    lastSensorReading = sensorData;
     io.emit('sensorData', sensorData);
   });
-}, 5000);
+};
+
+sensorDataToSocketIO();
+const sensorInterval = setInterval(sensorDataToSocketIO, 30000);
 
 io.on('connection', socket => {
   console.log('connect');
+  if (lastSensorReading) {
+    socket.emit('sensorData', lastSensorReading);
+  }
   socket.emit('templates', templates);
   socket.emit('currentMeeting', meeting);
   if (auth) {
