@@ -2,7 +2,8 @@ const templates = [
   {
     id: 0,
     title: 'DEMO',
-    description: 'Demo template for the presentation. Has short and clear sections for demo purposes.',
+    description:
+      'Demo template for the presentation. Has short and clear sections for demo purposes.',
     agenda: [
       {
         id: 1,
@@ -53,7 +54,7 @@ const templates = [
       },
       {
         id: 3,
-        title: '',
+        title: 'Break',
         duration: 10,
         color: '#b2bec3'
       },
@@ -99,7 +100,7 @@ const templates = [
       },
       {
         id: 3,
-        title: '',
+        title: 'Break',
         duration: 10,
         color: '#b2bec3'
       },
@@ -161,7 +162,7 @@ const templates = [
       },
       {
         id: 4,
-        title: '',
+        title: 'Break',
         duration: 10,
         color: '#b2bec3'
       },
