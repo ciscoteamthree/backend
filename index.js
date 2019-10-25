@@ -32,16 +32,29 @@ const netatmoAccessToken = process.env.NETATMO_ACCESS_TOKEN;
 const netatmoDeviceId = encodeURIComponent(process.env.NETATMO_DEVICE_ID);
 
 const getSensorData = () => {
-  return rp(
-    `https://api.netatmo.com/api/getstationsdata?access_token=${netatmoAccessToken}&device_id=${netatmoDeviceId}`
-  )
-    .then(res => {
-      console.log(res);
-    })
-    .catch(err => {
-      console.error(err);
-    });
+  const sensorData = {
+    co2: 200,
+    temp: 23.2
+  };
+  return new Promise(resolve => {
+    setTimeout(() => resolve(sensorData), 200);
+  });
+  // return rp(
+  //   `https://api.netatmo.com/api/getstationsdata?access_token=${netatmoAccessToken}&device_id=${netatmoDeviceId}`
+  // )
+  //   .then(res => {
+  //     console.log(res);
+  //   })
+  //   .catch(err => {
+  //     console.error(err);
+  //   });
 };
+
+const sensorInterval = setInterval(() => {
+  getSensorData().then(sensorData => {
+    io.emit('sensorData', sensorData);
+  });
+}, 5000);
 
 io.on('connection', socket => {
   console.log('connect');
