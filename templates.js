@@ -18,7 +18,7 @@ const templates = [
           'Time to reflect on the meeting and how it went, what can be done better the next time?',
         duration: 1,
         color: '#e17055'
-      }
+      },
       {
         id: 1,
         title: 'Green zone',
@@ -26,7 +26,7 @@ const templates = [
           'Let every team member air out new ideas. Nothing is wrong here, say what every is on your mind',
         duration: 1,
         color: '#00b894'
-      },
+      }
     ]
   },
   {
