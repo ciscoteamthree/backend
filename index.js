@@ -93,6 +93,9 @@ io.on('connection', socket => {
   if (lastSensorReading) {
     socket.emit('sensorData', lastSensorReading);
   }
+  if (auth && auth.user) {
+    socket.emit('user', auth.user);
+  }
   socket.emit('templates', templates);
   socket.emit('currentMeeting', meeting);
   if (auth) {
@@ -112,9 +115,9 @@ io.on('connection', socket => {
     io.emit('currentMeeting', meeting);
   });
 
-  socket.on('oauth', code => {
+  socket.on('oauth', async code => {
     console.log('oauth');
-    rp('https://api.ciscospark.com/v1/access_token', {
+    const res = await rp('https://api.ciscospark.com/v1/access_token', {
       method: 'POST',
       json: {
         grant_type: 'authorization_code',
@@ -123,14 +126,21 @@ io.on('connection', socket => {
         code: code,
         redirect_uri: process.env.REDIRECT_URL
       }
-    })
-      .then(res => {
-        auth = res;
-        io.emit('token', auth.access_token);
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    });
+    auth = res;
+    console.log('new auth', auth);
+    socket.emit('token', auth.access_token);
+
+    const userRes = await rp('https://api.ciscospark.com/v1/people/me', {
+      headers: {
+        Authorization: `Bearer ${res.access_token}`
+      }
+    });
+    if (userRes) {
+      const jsonUser = JSON.parse(userRes);
+      auth.user = jsonUser;
+      socket.emit('user', jsonUser);
+    }
   });
 });
 
