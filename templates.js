@@ -10,7 +10,7 @@ const templates = [
         title: 'Introduction',
         description: 'Welcome everyone to the meeting',
         duration: 3,
-        color: '##6c5ce7'
+        color: '#0984e3'
       },
       {
         id: 2,
@@ -21,7 +21,7 @@ const templates = [
         color: '#e17055'
       },
       {
-        id: 1,
+        id: 3,
         title: 'Green zone',
         description:
           'Let every team member air out new ideas. Nothing is wrong here, say what every is on your mind',
