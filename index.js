@@ -3,6 +3,8 @@ const io = new Server();
 const { templates } = require('./templates');
 const { meeting: initialMeeting } = require('./meeting');
 
+const { lightsOn, alert, prompt, playSound } = require('./hooks');
+
 var querystring = require('querystring');
 var rp = require('request-promise');
 io.set('origins', '*:*');
@@ -76,6 +78,12 @@ const getNetatmoAccessToken = () => {
     });
 };
 
+const colors = {
+  red: 0,
+  blue: 40000,
+  green: 25000
+};
+
 let lastSensorReading = null;
 let lastSensorWarning = 0;
 const sensorThreshold = 400; // 400ppm is normal, should be higher
@@ -86,9 +94,11 @@ const sensorWarn = () => {
   const diff = now - lastSensorWarning;
   if (diff > sensorTimeout * 1000) {
     console.log('WARN', lastSensorReading.co2);
-    // sendXAPIAlert(
-    //   `CO2 readings are dangerously high at ${lastSensorReading.co2} parts per million. You should open a window or take a break`
-    // );
+
+    lightsOn(colors.blue, 10);
+    alert(
+      `CO2 readings are dangerously high at ${lastSensorReading.co2} parts per million. You should open a window or take a break`
+    );
     lastSensorWarning = now;
   }
 };
@@ -130,6 +140,17 @@ io.on('connection', socket => {
     console.log('editMeeting');
     meeting = editedMeeting;
     io.emit('currentMeeting', meeting);
+  });
+
+  socket.on('sliceEnd', name => {
+    playSound();
+    setTimeout(name => alert('This section is almost done'), 1000);
+    lightsOn('blue', 8);
+  });
+
+  socket.on('meetingEnd', () => {
+    playSound();
+    setTimeout(() => alert('The meeting is about to end.'));
   });
 
   socket.on('endMeeting', () => {

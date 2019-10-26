@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "dotenv": "^8.2.0",
+    "jsxapi": "^4.5.0",
     "moment": "^2.24.0",
+    "philips-hue-api": "^0.1.6",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "socket.io": "^2.3.0"
