@@ -100,8 +100,8 @@ const sensorWarn = () => {
     setTimeout(
       () =>
         alert(
-          `CO2 readings are dangerously high.`,
-          `Readings are ${lastSensorReading.co2} parts per million. You should open a window or take a break`,
+          'Time to take a break!',
+          'Air quality is poor, take a break or open a window',
           10
         ),
       1000

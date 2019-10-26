@@ -3,7 +3,7 @@ const moment = require('moment');
 const jsxapi = require('jsxapi');
 const rp = require('request-promise');
 
-// 44 is demo TV
+// 44 is demo TV, 103 is other
 const xapi = jsxapi.connect('ssh://172.17.4.103', {
   username: 'admin',
   password: ''
@@ -44,13 +44,18 @@ const lightsOn = (color, duration) => {
 };
 
 const prompt = (title, text) => {
-  xapi.command('UserInterface Message Prompt Display', {
-    Title: title,
-    Text: text,
-    Option: {
-      1: 'OK'
-    }
-  });
+  xapi
+    .command('UserInterface Message Prompt Display', {
+      Title: title,
+      Text: text,
+      'Option.1': 'OK'
+    })
+    .then(res => {
+      console.log(res);
+    })
+    .catch(err => {
+      console.error(err);
+    });
 };
 
 const alert = (title, text, dur) => {
