@@ -153,7 +153,7 @@ io.on('connection', socket => {
     lightsOn(colors.blue, 8);
     playSound();
     setTimeout(
-      () => alert('This section is almost done', 'Ready to move on?', 10),
+      () => alert('This section is almost done', 'Ready to move on?', 9),
       1000
     );
   });
