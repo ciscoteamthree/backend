@@ -158,16 +158,17 @@ io.on('connection', socket => {
     );
   });
 
-  socket.on('meetingEnd', () => {
-    playSound();
-    setTimeout(() =>
-      alert('The meeting is about to end.', 'Ready to round up?', 10)
-    );
-  });
-
   socket.on('endMeeting', () => {
     meeting = null;
     io.emit('currentMeeting', meeting);
+  });
+
+  socket.on('greenZoneStarting', slice => {
+    playSound();
+    setTimeout(
+      () => prompt('Green zone is starting', slice.description, 10),
+      1000
+    );
   });
 
   socket.on('oauth', async code => {
