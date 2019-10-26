@@ -95,10 +95,17 @@ const sensorWarn = () => {
   if (diff > sensorTimeout * 1000) {
     console.log('WARN', lastSensorReading.co2);
 
-    alert(
-      `CO2 readings are dangerously high at ${lastSensorReading.co2} parts per million. You should open a window or take a break`
+    lightsOn(colors.red, 10);
+    playSound();
+    setTimeout(
+      () =>
+        alert(
+          `CO2 readings are dangerously high.`,
+          `Readings are ${lastSensorReading.co2} parts per million. You should open a window or take a break`,
+          10
+        ),
+      1000
     );
-    lightsOn(colors.blue, 10);
     lastSensorWarning = now;
   }
 };
@@ -143,14 +150,19 @@ io.on('connection', socket => {
   });
 
   socket.on('sliceEnd', name => {
+    lightsOn(colors.blue, 8);
     playSound();
-    setTimeout(name => alert('This section is almost done'), 1000);
-    lightsOn('blue', 8);
+    setTimeout(
+      () => alert('This section is almost done', 'Ready to move on?', 10),
+      1000
+    );
   });
 
   socket.on('meetingEnd', () => {
     playSound();
-    setTimeout(() => alert('The meeting is about to end.'));
+    setTimeout(() =>
+      alert('The meeting is about to end.', 'Ready to round up?', 10)
+    );
   });
 
   socket.on('endMeeting', () => {
