@@ -95,10 +95,10 @@ const sensorWarn = () => {
   if (diff > sensorTimeout * 1000) {
     console.log('WARN', lastSensorReading.co2);
 
-    lightsOn(colors.blue, 10);
     alert(
       `CO2 readings are dangerously high at ${lastSensorReading.co2} parts per million. You should open a window or take a break`
     );
+    lightsOn(colors.blue, 10);
     lastSensorWarning = now;
   }
 };
