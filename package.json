@@ -16,7 +16,7 @@
     "philips-hue-api": "^0.1.6",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.4.0"
   },
   "devDependencies": {
     "prettier": "^1.18.2"
